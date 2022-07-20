@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,9 +17,11 @@ import com.employee.entity.Country;
 import com.employee.entity.Employee;
 import com.employee.repository_Dao.CountryRepository;
 import com.employee.repository_Dao.EmployeeRepository;
+import com.employee.service.AutoGenaratedIdClass;
 import com.employee.service.CatcheOperation;
 
 @RestController
+@CrossOrigin
 public class MainController {
 
 	@Autowired
@@ -30,15 +33,10 @@ public class MainController {
 	@PostMapping("/saveemployee")
 	public ResponseEntity<?> saveEmployee(@RequestBody Employee employee)
 	{
-		//set employee id and created date
-		employee.setEid(CatcheOperation.getAutoIdForEmployeeId());
 		
-		//set created date for employee
-		employee.setCreateddate(new Date());
-
-		//update hash map
-		CatcheOperation.catche.put(employee.getEid(), employee);
-
+		employee.setEid(AutoGenaratedIdClass.getAutoIdForEmployeeId());//set employee id and created date
+		employee.setCreateddate(new Date());//set created date for employee
+		CatcheOperation.catche.put(employee.getEid(), employee);	//update hash map
 		return new ResponseEntity<Employee>(repo.save(employee),HttpStatus.ACCEPTED);
 	}
 
@@ -57,14 +55,10 @@ public class MainController {
 	@PutMapping("/updateemployee")
 	public ResponseEntity<?> updateEmployee(@RequestBody Employee employee)
 	{
-
-		//cretedDate getting and setting
-		Employee employee2 = CatcheOperation.catche.get(employee.getEid());
+		Employee employee2 = CatcheOperation.catche.get(employee.getEid());//cretedDate getting and setting
 		employee.setCreateddate(employee2.getCreateddate());
-
-		//updateDate seted
-		employee.setUpdateddate(new Date());
-
+		
+		employee.setUpdateddate(new Date());//updateDate seted
 
 		//hashmap update
 		CatcheOperation.catche.remove(employee.getEid());
