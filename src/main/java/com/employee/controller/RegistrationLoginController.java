@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.employee.entity.Employee;
 import com.employee.entity.Registration;
 import com.employee.repository_Dao.RegistrationRepository;
 import com.employee.service.AutoGenaratedIdClass;
@@ -45,13 +48,11 @@ public class RegistrationLoginController {
 			
 		String massage="Hellow "+registration.getFirstname()+" "+sex+
 				",\nYour registration ID is "+registration.getRegistrationid()+
-				" Username "+registration.getUsername()+
+				", Username "+registration.getUsername()+
 				" and Password is "+registration.getPassword()+
 				"\nThank you for choosing\nHave a nice Day\n"+new Date(); String
 				Subject="Registration Sucessfully!"; String to=registration.getEmail();
 				EmailSending.sendEmail(massage,Subject,to);
-
-
 
 				return new ResponseEntity<Registration>(repo.save(registration),HttpStatus.ACCEPTED);
 	}
@@ -63,6 +64,7 @@ public class RegistrationLoginController {
 		HashMap<Object, Object> hashMap=new HashMap<>();
 		List<Integer> key=new ArrayList<>();
 		key.clear();
+		
 		//if Registration id is provided
 		if(registration.getRegistrationid()!=0)
 		{
@@ -78,20 +80,11 @@ public class RegistrationLoginController {
 			filter(t -> t.getValue().getEmail().equals(registration.getEmail())).
 			forEach(t -> key.add(t.getKey()));
 		}
+		
 
-
-		//by for Each 
-		//			CatcheOperation.catcheRegistration.forEach((t, u) -> {
-		//			System.out.println("for each enter :: "+t+" "+u );
-		//			if(u.getEmail().equals(registration.getEmail()))
-		//			{
-		//				System.out.println(t);
-		//			}
-		//		});
-
-
+		
 		//1)BELOW IF bracket check--->id is available or not && username and password is available or not && [username check from hashMap || email check from hash map] && password check from data base
-		if(CatcheOperation.catcheRegistration.get(key.get(0))!=null && registration!=null && 
+		if(key!=null && CatcheOperation.catcheRegistration.get(key.get(0))!=null && registration!=null &&
 				(CatcheOperation.catcheRegistration.get(key.get(0)).getRegistrationid()==registration.getRegistrationid() || 
 				CatcheOperation.catcheRegistration.get(key.get(0)).getEmail().equals(registration.getEmail())) &&
 				CatcheOperation.catcheRegistration.get(key.get(0)).getPassword().equals(registration.getPassword()))
@@ -103,9 +96,12 @@ public class RegistrationLoginController {
 		}
 		else
 		{
-			hashMap.put("msgFail", "Not Valid User");
+			hashMap.put("msgFail", "Not Valid User or user Not Found");
 			return new ResponseEntity<>(hashMap,HttpStatus.NOT_FOUND);
 		}
 	}
+	
+	
+	
 
 }

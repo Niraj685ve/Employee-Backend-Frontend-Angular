@@ -33,28 +33,41 @@ public class MainController {
 	@PostMapping("/saveemployee")
 	public ResponseEntity<?> saveEmployee(@RequestBody Employee employee)
 	{
-		
+		System.err.println("Create Employee Query Fiared"+employee);
 		employee.setEid(AutoGenaratedIdClass.getAutoIdForEmployeeId());//set employee id and created date
 		employee.setCreateddate(new Date());//set created date for employee
 		CatcheOperation.catche.put(employee.getEid(), employee);	//update hash map
-		return new ResponseEntity<Employee>(repo.save(employee),HttpStatus.ACCEPTED);
+		
+		if(CatcheOperation.catche.get(employee.getEid())!=null)
+		{
+			return new ResponseEntity<Employee>(repo.save(employee),HttpStatus.ACCEPTED);
+		}
+		else
+		{
+			return new ResponseEntity<String>("Data Not Save!!",HttpStatus.BAD_GATEWAY);
+		}
+		
+		
 	}
 
 	@GetMapping("/getemployeebyid/{employeeid}")
 	public ResponseEntity<?> getEmployeeById(@PathVariable int employeeid)
 	{
+		System.err.println("Get Employee by id Query Fiared and ID is -"+employeeid);
 		return new ResponseEntity<Employee>(CatcheOperation.catche.get(employeeid),HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/getallemployee")
 	public ResponseEntity<List<Employee>> getAllEmployee()
 	{
+		System.err.println("Get All Employee Query Fiared");
 		return new ResponseEntity<List<Employee>>(CatcheOperation.catche.values().stream().toList(),HttpStatus.ACCEPTED);
 	}
 
 	@PutMapping("/updateemployee")
 	public ResponseEntity<?> updateEmployee(@RequestBody Employee employee)
 	{
+		System.err.println("Update Employee Query Fiared");
 		Employee employee2 = CatcheOperation.catche.get(employee.getEid());//cretedDate getting and setting
 		employee.setCreateddate(employee2.getCreateddate());
 		
@@ -71,6 +84,7 @@ public class MainController {
 	@DeleteMapping("/deleteemployee/{employeeid}")
 	public ResponseEntity<?> deleteEmployee(@PathVariable int employeeid)
 	{
+		System.err.println("Delete Employee Query Fiared");
 		//data remove from data base by custom query in repository
 		repo.deleteEmployeeById(employeeid);
 
@@ -85,24 +99,28 @@ public class MainController {
 	@PostMapping("/savecountry")
 	public ResponseEntity<?> saveCountry(@RequestBody Country country)
 	{
+		System.err.println("Create Country Query Fiared");
 		return new ResponseEntity<Country>( repoCountry.save(country),HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/getcountrybyemployeid/{countryid}")
 	public ResponseEntity<?> getCountryByCountryId(@PathVariable int countryid) 
 	{
+		System.err.println("Get Country By id Query Fiared");
 		return new ResponseEntity<Country>(CatcheOperation.catcheCountry.get(countryid),HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/getallcountry")
 	public ResponseEntity<List<Country>>  getAllCountry()
 	{
+		System.err.println("Get All Country Query Fiared");
 		return new ResponseEntity<List<Country>>( CatcheOperation.catcheCountry.values().stream().toList(),HttpStatus.ACCEPTED);
 	}
 
 	@PutMapping("/updatecountry")
 	public ResponseEntity<?> updateCountryBycountryId(@RequestBody Country country)
 	{
+		System.err.println("Update Country Query Fiared");
 		//hashmap update
 		CatcheOperation.catcheCountry.remove(country.getCid());
 		CatcheOperation.catcheCountry.put(country.getCid(), country);
@@ -113,6 +131,7 @@ public class MainController {
 	@DeleteMapping("deletecountry/{countryid}")
 	public ResponseEntity<?> deleteCountry(@PathVariable int countryid)
 	{
+		System.err.println("Delete Country Query Fiared");
 		//data remove from data base
 		repoCountry.deleteById(countryid);
 
@@ -127,12 +146,14 @@ public class MainController {
 	@GetMapping("/getcountrybyemployeeid/{employeeid}")
 	public ResponseEntity<?> getCountryByEmployeeId(@PathVariable int employeeid)
 	{
+		System.err.println("Get Country by Employee ID Query Fiared");
 		return new ResponseEntity<Country>(CatcheOperation.catche.get(employeeid).getCountry(),HttpStatus.ACCEPTED);
 	}
 
 	@PutMapping("/updatecountrybyemployeeid/{employeeid}")
 	public ResponseEntity<?> updateCountryByEmployeeId(@RequestBody Country country,@PathVariable int employeeid)
 	{
+		System.err.println("Update Country by Employee ID Query Fiared");
 		//get country from employee id
 		Country countryCopy = CatcheOperation.catche.get(employeeid).getCountry();	
 		countryCopy.setCid(country.getCid());
